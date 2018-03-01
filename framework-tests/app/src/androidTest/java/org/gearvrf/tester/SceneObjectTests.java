@@ -85,6 +85,51 @@ public class SceneObjectTests
     }
 
     @Test
+    public void canRemoveSceneObjects() throws TimeoutException
+    {
+        GVRContext ctx  = mTestUtils.getGvrContext();
+        GVRScene scene = mTestUtils.getMainScene();
+
+        GVRSceneObject blueSphere = new GVRSphereSceneObject(ctx, true, mBlueMtl);
+        blueSphere.setName("BlueSphere");
+        blueSphere.getTransform().setPosition(0f, 0f, -5f);
+        scene.addSceneObject(blueSphere);
+
+        GVRMaterial whiteMaterial = new GVRMaterial(ctx, GVRMaterial.GVRShaderType.Phong.ID);
+        whiteMaterial.setDiffuseColor(1, 1, 1, 1);
+
+        GVRSceneObject whiteSphere = new GVRSphereSceneObject(ctx, true, whiteMaterial);
+        whiteSphere.setName("White");
+        whiteSphere.getTransform().setPosition(-2f, 0f, -5f);
+        scene.addSceneObject(whiteSphere);
+
+        GVRSceneObject whiteCube = new GVRCubeSceneObject(ctx, true, whiteMaterial);
+        whiteCube.setName("White");
+        whiteCube.getTransform().setPosition(2f, 0f, -5f);
+        scene.addSceneObject(whiteCube);
+
+        GVRSceneObject whiteCylinder = new GVRCylinderSceneObject(ctx, true, whiteMaterial);
+        whiteCylinder.setName("White");
+        whiteCylinder.getTransform().setPosition(0f, 2f, -5f);
+        scene.addSceneObject(whiteCylinder);
+
+        mTestUtils.waitForSceneRendering();
+        mTestUtils.waitForXFrames(30);
+
+        boolean removed = scene.removeSceneObjectByName("White");
+        mTestUtils.waitForXFrames(60);
+        mWaiter.assertTrue(removed);
+
+        int numWhites = scene.removeSceneObjectsByName("White");
+        mTestUtils.waitForXFrames(30);
+        mWaiter.assertEquals(2, numWhites);
+
+        removed = scene.removeSceneObjectByName("White");
+        mTestUtils.waitForXFrames(30);
+        mWaiter.assertFalse(removed);
+    }
+
+    @Test
     public void canClearSceneWithStuff() throws TimeoutException
     {
         GVRContext ctx  = mTestUtils.getGvrContext();
